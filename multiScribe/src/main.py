@@ -7,13 +7,7 @@ Created on 26 Jul 2023
 import sys
 import os
 import subprocess
-import openai
-
-# Set up your OpenAI API credentials
-openai.api_key = 'YOUR_API_KEY'
-
-
-# check if main
+import whisper
 
     
 # Function to recursively search for MP4 files in the current directory
@@ -26,24 +20,20 @@ def search_files(directory):
     return mp4_files
 
 # Function to extract audio from MP4 using python-ffmpeg
+# rewrite this to use native binding
 def extract_audio(mp4_file):
-    audio_file = mp4_file[:-4] + ".wav"
-    subprocess.call(["ffmpeg", "-i", mp4_file, "-vn", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", audio_file])
+    wav_file = mp4_file[:-4] + ".wav"
+    ffmpeg.input(mp4_file)
+    audio_file = ffmpeg.output()
+#    subprocess.call(["ffmpeg", "-i", mp4_file, "-vn", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", audio_file])
     return audio_file
 
-# rewrite this to use native binding
 
 # Function to generate transcript using OpenAI's Whisper ASR API
 def generate_transcript(audio_file):
-    with open(audio_file, 'rb') as f:
-        response = openai.Transcription.create(
-            audio=f,
-            model="whisper",
-            language="en-US",
-            format="wav"
-        )
-        transcript = response['transcriptions'][0]['text']
-        return transcript
+    model = whisper.load_model("small.en")
+    transcript = model.transcribe(audio_file)
+    return transcript
 
 # Main function to process MP4 files and generate transcripts
 def process_files(directory):
