@@ -43,13 +43,15 @@ def generate_transcript(audio_file, lang_model, processor):
     # check if model already exists
     model = whisper.load_model(lang_model)
     transcript = model.transcribe(audio_file, fp16=False, language='English')
+    
     return transcript
 
 
 def main():
     
     '''Uses OpenAI's whisper program to transcribe multiple video files.'''
-
+    mp4_files = []
+    
     # use the arguments passed throught the command line to set variables/flags 
     parser = argparse.ArgumentParser()
     
@@ -86,5 +88,4 @@ def main():
     
 if __name__ == '__main__':
     main()
-
 
