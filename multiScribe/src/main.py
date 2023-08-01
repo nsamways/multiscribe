@@ -65,7 +65,7 @@ def main():
     whisper_model = args.model if args.model else whisper_model = "tiny-en"
     proc_type = "cuda" if args.processor == "g" else proc_type = "cpu" 
 
-    print( "input {} output {} model  ".format(
+    print( "input {} output {} model {} processor {} ".format(
         args.input,
         args.output,
         args.model,
