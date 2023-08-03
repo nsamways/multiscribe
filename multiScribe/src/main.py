@@ -9,6 +9,7 @@ import whisper
 import json
 import ffmpeg
 import argparse
+from dill.tests.test_logger import loglevel
     
 # Function to recursively search for MP4 files in the current directory
 def search_files(directory):
@@ -29,6 +30,7 @@ def extract_audio(mp4_file):
     
     if not os.path.isfile(audio_file):
         
+        print("doesn't exist")
         # doesn't exist, so create
         stream = ffmpeg.input(mp4_file)
         stream = ffmpeg.output(stream, audio_file)
@@ -41,13 +43,15 @@ def extract_audio(mp4_file):
 def generate_transcript(audio_file, lang_model, processor):
     
     # check if model already exists
-    model = whisper.load_model(lang_model)
+    model = whisper.load_model(lang_model, device=processor)
     transcript = model.transcribe(audio_file, fp16=False, language='English')
     
     return transcript
 
 
 def main():
+    
+    os.system("pwd")
     
     '''Uses OpenAI's whisper program to transcribe multiple video files.'''
     mp4_files = []
@@ -62,28 +66,38 @@ def main():
 
     args = parser.parse_args()
 
-    input_path = args.input if args.input else input_path = "./"
-    output_path = args.output if args.output else output_path = None
-    whisper_model = args.model if args.model else whisper_model = "tiny-en"
-    proc_type = "cuda" if args.processor == "g" else proc_type = "cpu" 
+    input_path = args.input if args.input else "./"
+    output_path = args.output if args.output else  None
+    whisper_model = args.model if args.model else "base"
+    proc_type = "cuda" if args.processor == "g" else "cpu" 
 
-    print( "input {} output {} model {} processor {} ".format(
-        args.input,
-        args.output,
-        args.model,
-        args.proc_type
-        ))
+    # print( "input {} output {} model {} processor {} ".format(
+    #     args.input,
+    #     args.output,
+    #     args.model,
+    #     args.processor
+    #     ))
+    #
+    # # get file list
+    #
+    # print( "input {} output {} model {} processor {} ".format(
+    # input_path,
+    # output_path,
+    # whisper_model,
+    # proc_type
+    # ))
     
-    # get file list
     mp4_files = search_files(input_path)
+
+    # print(mp4_files)
     
     # process file list accordingly
     for mp4_file in mp4_files:
         audio_file = extract_audio(mp4_file)
-        transcript = generate_transcript(audio_file, whisper_model, proc_type)
-        
-        print(f"Transcript for {mp4_file}:")
-        print(transcript)
+        # transcript = generate_transcript(audio_file, whisper_model, proc_type)
+        #
+        # print(f"Transcript for {mp4_file}:")
+        # print(transcript)
 
     
 if __name__ == '__main__':
