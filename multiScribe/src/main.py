@@ -9,6 +9,7 @@ import whisper
 import json
 import ffmpeg
 import argparse
+import time
     
 # Function to recursively search for MP4 files in the current directory
 def search_files(directory):
@@ -42,18 +43,21 @@ def extract_audio(mp4_file):
 def generate_transcript(audio_file, lang_model, processor):
     
     # check if model already exists
+    start = time.perf_counter()
+    
     print("Loading model")
     model = whisper.load_model(lang_model, device=processor)
     print("Generating transcript")
     transcript = model.transcribe(audio_file, fp16=False, language='English')
     
     return transcript
-
+    print(f"Total duration {time.perf_counter()-start}")
+    
 
 def main():
        
     '''Uses OpenAI's whisper program to transcribe multiple video files.'''
-    mp4_files = []
+#    mp4_files = []
     
     # use the arguments passed throught the command line to set variables/flags 
     parser = argparse.ArgumentParser()
