@@ -128,10 +128,10 @@ def main():
             
             # write details to log file
             if cv_duration:
-                f.writelines("\n " + mp4_file + " Converstion time: " + cv_duration + " Transcription time: " + tr_duration)
+                f.writelines("\n " + mp4_file + " Converstion time: " + str(cv_duration) + " Transcription time: " + tr_duration)
     
             else:
-                f.writelines("\n " + mp4_file + " Transcription time: " + tr_duration)
+                f.writelines("\n " + mp4_file + " Transcription time: " + str(tr_duration))
                 
             # output transcript
             words = transcript["text"]
