@@ -134,8 +134,8 @@ def main():
                 f.writelines("\n " + mp4_file + " Transcription time: " + str(tr_duration))
                 
             # output transcript
-            words = transcript["text"]
-            
+            segments = transcript["segments"]
+
             if custom_output:
                 
                 head_tail = os.path.split(mp4_file)
@@ -145,11 +145,12 @@ def main():
             else:
                 tr_out_path = mp4_file[:-4] + ".txt"
             
-            
+                        
             with open(tr_out_path ,'w') as g: 
-                g.writelines(words)
-            
-            
+                                
+                for identifier_number in segments:
+                    g.writelines(str(identifier_number["start"]) + " - " + str(identifier_number["end"]) + ": " + identifier_number["text"] + "\n")
+
         # close the log file
         f.close()
                 
