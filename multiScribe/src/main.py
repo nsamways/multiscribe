@@ -62,7 +62,18 @@ def generate_transcript(audio_file, lang_model, processor):
     
     return (t_durr, transcript)
     
+def time_format(num_seconds):
     
+    hours = num_seconds // 3600
+    num_seconds %= 3600
+    mins = num_seconds // 60   
+    secs = num_seconds % 60
+    
+    hms_time = str('{:0>2.0f}'.format(hours)) + ":" + str('{:0>2.0f}'.format(mins)) + ":" + str('{:0>2.0f}'.format(secs))
+    
+    return (hms_time)
+    ''' take a time in seconds as a float and return a string in H:M:S format. '''
+        
 
 def main():
        
@@ -128,10 +139,10 @@ def main():
             
             # write details to log file
             if cv_duration:
-                f.writelines("\n " + mp4_file + " Converstion time: " + str(cv_duration) + " Transcription time: " + str(tr_duration))
+                f.writelines("\n " + mp4_file + " Converstion time: " + time_format(cv_duration) + " Transcription time: " + time_format(tr_duration))
     
             else:
-                f.writelines("\n " + mp4_file + " Transcription time: " + str(tr_duration))
+                f.writelines("\n " + mp4_file + " Transcription time: " + time_format(tr_duration))
                 
             # output transcript
             segments = transcript["segments"]
@@ -149,7 +160,7 @@ def main():
             with open(tr_out_path ,'w') as g: 
                                 
                 for identifier_number in segments:
-                    g.writelines(str(identifier_number["start"]) + " - " + str(identifier_number["end"]) + ": " + identifier_number["text"] + "\n")
+                    g.writelines(time_format(identifier_number["start"]) + " - " + time_format(identifier_number["end"]) + ": " + identifier_number["text"] + "\n")
 
         # close the log file
         f.close()
