@@ -10,22 +10,27 @@ import ffmpeg
 import argparse
 import time
     
-# Function to recursively search for MP4 files in the current directory
+# Function to recursively search for media files in the current directory
 def search_files(directory):
-    mp4_files = []
+    
+    media_files = []
+    
+    # create a list of filetypes to search for 
+    media_types = ['.mp3','.mp4','.opus']
+    
     for root, _, files in os.walk(directory):
         for file in files:
-            if file.endswith(".mp4"):
-                mp4_files.append(os.path.join(root, file))
+            if (os.path.splitext(file)[1].lower()) in media_types:
+                media_files.append(os.path.join(root, file))
     
-    return mp4_files
+    return media_files
 
 # Function to extract audio from MP4 using python-ffmpeg
-def extract_audio(mp4_file):
+def extract_audio(media_file):
     
     c_durr = None
     # check if the file already exists. If not, create it
-    audio_file = mp4_file[:-4] + ".wav"
+    audio_file = media_file[:-4] + ".wav"
     
     if not os.path.isfile(audio_file):
         
@@ -34,7 +39,7 @@ def extract_audio(mp4_file):
         
         c_start = time.perf_counter()
         
-        stream = ffmpeg.input(mp4_file)
+        stream = ffmpeg.input(media_file)
         stream = ffmpeg.output(stream, audio_file, loglevel="quiet")
         ffmpeg.run(stream)
         
@@ -96,13 +101,14 @@ def main():
     proc_type = "cuda" if args.processor == "g" else "cpu" 
 
     
-    mp4_files = search_files(input_path)
+    media_files = search_files(input_path)
 
-    # print(mp4_files)
-    if mp4_files:
-        # there are some MP4 files so set everything up
+    # media file list
+
+    if media_files:
+        # there are some media files so set everything up
         if output_path:
-            # create a new folder to put the transcripts in
+            # create a new folder for the transcripts
             custom_output = True
    
             new_path = output_path
@@ -132,29 +138,29 @@ def main():
         # generate base for transcript output    
         
         # process file list accordingly
-        for mp4_file in mp4_files:
+        for media_file in media_files:
             
-            (cv_duration, audio_file) = extract_audio(mp4_file)
+            (cv_duration, audio_file) = extract_audio(media_file)
             (tr_duration, transcript) = generate_transcript(audio_file, whisper_model, proc_type)
             
             # write details to log file
             if cv_duration:
-                f.writelines("\n " + mp4_file + " Converstion time: " + time_format(cv_duration) + " Transcription time: " + time_format(tr_duration))
+                f.writelines("\n " + media_file + " Converstion time: " + time_format(cv_duration) + " Transcription time: " + time_format(tr_duration))
     
             else:
-                f.writelines("\n " + mp4_file + " Transcription time: " + time_format(tr_duration))
+                f.writelines("\n " + media_file + " Transcription time: " + time_format(tr_duration))
                 
             # output transcript
             segments = transcript["segments"]
 
             if custom_output:
                 
-                head_tail = os.path.split(mp4_file)
+                head_tail = os.path.split(media_file)
                 new_head = head_tail[1][:-4] + ".txt"
                 tr_out_path = os.path.join(new_path, new_head)
                     
             else:
-                tr_out_path = mp4_file[:-4] + ".txt"
+                tr_out_path = media_file[:-4] + ".txt"
             
                         
             with open(tr_out_path ,'w') as g: 
@@ -167,7 +173,7 @@ def main():
                 
     else:
         
-        print("No MP4 files found. Exiting.")        
+        print("No Media files found. Exiting.")        
         
 
     
