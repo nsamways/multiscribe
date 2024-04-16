@@ -26,7 +26,7 @@ def search_files(directory):
     
     return media_files
 
-# Function to extract audio from MP4 using python-ffmpeg
+# Function to extract audio from media using python-ffmpeg
 def extract_audio(media_file):
     
     c_durr = None
