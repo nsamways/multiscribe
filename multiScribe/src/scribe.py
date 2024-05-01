@@ -1,6 +1,6 @@
 '''
 Created on 26 Jul 2023
-Last updated 16 Apr 2024
+Last updated 01 May 2024
 
 @author: nsamways
 '''
@@ -13,7 +13,7 @@ import time
     
 # Function to recursively search for media files in the current directory
 def search_files(directory):
-    
+    '''Recursively searches a given root directory and returns a list of appropriate media files'''
     media_files = []
     
     # create a list of filetypes to search for 
@@ -28,6 +28,7 @@ def search_files(directory):
 
 # Function to extract audio from media using python-ffmpeg
 def extract_audio(media_file):
+    '''Takes a media file and returns a transcoded wav file along with the time taken for the transcode.'''
     
     c_durr = None
     # check if the file already exists. If not, create it
@@ -51,7 +52,7 @@ def extract_audio(media_file):
 
 # Function to generate transcript using OpenAI's Whisper
 def generate_transcript(audio_file, lang_model, processor):
-    
+    '''Transcribe an audio file for a given model and processor type. Returns the time taken and a dict with the transcript embedded. '''
     # check if model already exists
     try:
         model
@@ -67,8 +68,10 @@ def generate_transcript(audio_file, lang_model, processor):
     t_durr = time.perf_counter() - t_start
     
     return (t_durr, transcript)
-    
+
+# function to format a time value    
 def time_format(num_seconds):
+    ''' take a time in seconds as a float and return a string in H:M:S format. '''
     
     hours = num_seconds // 3600
     num_seconds %= 3600
@@ -78,11 +81,9 @@ def time_format(num_seconds):
     hms_time = str('{:0>2.0f}'.format(hours)) + ":" + str('{:0>2.0f}'.format(mins)) + ":" + str('{:0>2.0f}'.format(secs))
     
     return (hms_time)
-    ''' take a time in seconds as a float and return a string in H:M:S format. '''
         
 
-def main():
-       
+def main():     
     '''Uses OpenAI's whisper program to transcribe multiple video files.'''
     
     # use the arguments passed throught the command line to set variables/flags 
@@ -100,10 +101,8 @@ def main():
     whisper_model = args.model if args.model else "base"
     proc_type = "cuda" if args.processor == "g" else "cpu" 
 
-    # search for 
+    # search for candidtae files
     media_files = search_files(input_path)
-
-    # media file list
 
     if media_files:
         # there are some media files so set everything up
@@ -116,7 +115,7 @@ def main():
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
             
-            # create the ouptput file      
+            # create the log file      
             f =  open((os.path.join(new_path, r'./log.txt')), 'w')
             f.write("\n Results")
       
