@@ -17,7 +17,7 @@ def search_files(directory):
     media_files = []
     
     # create a list of filetypes to search for 
-    media_types = ['.mp3','.mp4','.opus']
+    media_types = ['.mp3','.mp4','.opus', '.mod', '.wma']
     
     for root, _, files in os.walk(directory):
         for file in files:
